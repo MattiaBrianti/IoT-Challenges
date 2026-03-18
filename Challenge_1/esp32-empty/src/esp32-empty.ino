@@ -15,7 +15,7 @@ esp_now_peer_info_t peerInfo;
 #define TIME_TO_SLEEP  1.4        /* Personal code ending in 59 */
 
 // Sending callback
-void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+void OnDataSent(const wifi_tx_info_t *mac_addr, esp_now_send_status_t status) {
   Serial.print("Send Status: ");
   Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Ok" : "Error");
 }
@@ -27,7 +27,7 @@ void setup() {
   pinMode(PIR_PIN, INPUT);
   pinMode(LDR_PIN, INPUT);
 
-  Wifi.mode(WIFI_STA);
+  WiFi.mode(WIFI_STA);
   esp_now_init();
 
   // send callback
@@ -54,8 +54,11 @@ void setup() {
   }
 
   // Send the message via ESP-NOW
-  esp_now_send(broadcastAddress, (uint8_t*)message.c_str(), message.lenght()+1);
+  esp_now_send(broadcastAddress, (uint8_t*)message.c_str(), message.length());
 
+  Serial.println("Message sent: " + message);
+
+  //DAVEDERE
   delay(100); // Short delay to ensure the message is sent before sleeping
 
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
