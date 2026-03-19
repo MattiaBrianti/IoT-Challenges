@@ -1,5 +1,7 @@
 #include <WiFi.h>
 #include <esp_now.h>
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 
 
 // Define PINs
@@ -16,8 +18,9 @@ const float RL10 = 50;
 esp_now_peer_info_t peerInfo;
 
 // Parameters for DeepSleep
-#define uS_TO_S_FACTOR 1000000ULL  /* Conversion factor for micro seconds to seconds */
-#define TIME_TO_SLEEP  1.4        /* Personal code ending in 59 */
+#define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
+#define TIME_TO_SLEEP  5       /* (59%50+5)/10 = 1.4 -- Person code = 10773859 */
+RTC_DATA_ATTR int bootCount = 0;
 
 // Sending callback
 void OnDataSent(const wifi_tx_info_t *mac_addr, esp_now_send_status_t status) {
@@ -26,12 +29,19 @@ void OnDataSent(const wifi_tx_info_t *mac_addr, esp_now_send_status_t status) {
 }
 
 void setup() {
+
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+
   Serial.begin(115200);
-  
+
+  ++bootCount;
+  Serial.println("Boot number: " + String(bootCount));
+
   // Setting up the PIR and LDR pins
   pinMode(PIR_PIN, INPUT);
   pinMode(LDR_PIN, INPUT);
 
+  Serial.println("Enabling WiFi STA");
   WiFi.mode(WIFI_STA);
   esp_now_init();
 
@@ -64,14 +74,19 @@ void setup() {
   }
 
   // Send the message via ESP-NOW
-  esp_now_send(broadcastAddress, (uint8_t*)message.c_str(), message.length());
+  esp_now_send(broadcastAddress, (uint8_t*)message.c_str(), message.length() + 1);
 
   Serial.println("Message sent: " + message);
 
-  //DAVEDERE
-  delay(100); // Short delay to ensure the message is sent before sleeping
+  delay(100); // Short delay to ensure the message is sent before going to sleep
 
+  Serial.println("\n Disabling WiFi");
+  WiFi.mode(WIFI_OFF);
+
+  Serial.println("Entering deep sleep now...");
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+
+  Serial.flush(); // Ensure all serial data is sent before sleeping
   esp_deep_sleep_start();
 }
 
