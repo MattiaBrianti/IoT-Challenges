@@ -1,7 +1,6 @@
 #include <WiFi.h>
 #include <esp_now.h>
 
-//TODO: Convert to LUX
 
 // Define PINs
 #define PIR_PIN 27
