@@ -10,6 +10,10 @@
 // MAC receiver
 uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
+// These constants should match the photoresistor's "gamma" and "rl10" attributes
+const float GAMMA = 0.7;
+const float RL10 = 50;
+
 esp_now_peer_info_t peerInfo;
 
 // Parameters for DeepSleep
@@ -45,7 +49,12 @@ void setup() {
 
   // Read the PIR and LDR values
   int motionDetected = digitalRead(PIR_PIN);
-  int luminosity = analogRead(LDR_PIN);
+  int analogValue = analogRead(LDR_PIN);
+  
+  // Convert the analog value into lux value:
+  float voltage = analogValue / 4095. * 3.3;
+  float resistance = 10000 * voltage / (3.3 - voltage);
+  float luminosity = pow(RL10 * 1e3 * pow(10, GAMMA) / resistance, (1 / GAMMA));
 
   // Create the message to send
   String message;
