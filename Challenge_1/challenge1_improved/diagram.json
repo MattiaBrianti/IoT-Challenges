@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 124.8, "left": 24.04, "attrs": {} },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": 204.8,
+      "left": -258.4,
+      "attrs": {}
+    },
+    { "type": "wokwi-pir-motion-sensor", "id": "pir1", "top": -15.2, "left": 21.42, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:GND.1", "ldr1:GND", "black", [ "h-71.81", "v-162.8" ] ],
+    [ "esp:3V3", "ldr1:VCC", "red", [ "h0" ] ],
+    [ "ldr1:AO", "esp:34", "orange", [ "h19.2", "v-48.7", "h96" ] ],
+    [ "pir1:VCC", "esp:5V", "red", [ "h-76.8", "v249.6" ] ],
+    [ "pir1:GND", "esp:GND.1", "black", [ "v19.2", "h-67.46", "v182.4" ] ],
+    [ "pir1:OUT", "esp:27", "green", [ "v9.6", "h-76.94", "v163.2" ] ]
+  ],
+  "dependencies": {}
+}
