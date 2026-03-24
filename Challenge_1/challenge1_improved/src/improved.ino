@@ -66,54 +66,57 @@ void setup() {
   unsigned long t_wifi_off_idle_end_1 = micros();
   // ---- FINISH 1ST PART OF IDLE TIME MEASUREMENT (Boot to Wi-Fi ON) ---
 
-  // --- 2. MEASURE Wi-Fi-ON  Time ---
-  unsigned long t_wifi_on_start = micros();
-  Serial.println("Enabling WiFi STA");
-  WiFi.mode(WIFI_STA);
-  esp_now_init();
-  
-  // Register the send callback
-  esp_now_register_send_cb(OnDataSent);
-  
-  // Peer Registration
-  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-  peerInfo.channel = 0;
-  peerInfo.encrypt = false;
-  
-  // Add peer
-  esp_now_add_peer(&peerInfo);
+  if(motionDetected == HIGH && luminosity < 100) {
+     
+    // --- 2. MEASURE Wi-Fi-ON  Time ---
+    unsigned long t_wifi_on_start = micros();
+    //Serial.println("Enabling WiFi STA");
+    WiFi.mode(WIFI_STA);
+    esp_now_init();
+    
+    // Register the send callback
+    esp_now_register_send_cb(OnDataSent);
+    
+    // Peer Registration
+    memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+    peerInfo.channel = 0;
+    peerInfo.encrypt = false;
+    
+    // Add peer
+    esp_now_add_peer(&peerInfo);
 
-  // Create the message to send
-  String message;
-  if (motionDetected == HIGH) {
-    message = "MOTION_DETECTED-LUMINOSITY:" + String(luminosity);
-  } else {
-    message = "MOTION_NOT_DETECTED-LUMINOSITY:" + String(luminosity);
+    // Create the message to send
+    String message;
+    if (motionDetected == HIGH) {
+      message = "MOTION_DETECTED-LUMINOSITY:" + String(luminosity);
+    } else {
+      message = "MOTION_NOT_DETECTED-LUMINOSITY:" + String(luminosity);
+    }
+
+    // --- 2. MEASURE TRANSMISSION TIME ---
+    unsigned long t_tx_start = micros();
+
+    // Send the message via ESP-NOW
+    esp_now_send(broadcastAddress, (uint8_t*)message.c_str(), message.length() + 1);
+
+    unsigned long t_tx_end = micros();
+
+    //Serial.println("Message sent: " + message);
+
+    // Short delay to ensure the message is fully sent over the air
+    //delay(100);
+
+    // Disable Wi-Fi
+    //Serial.println("\nDisabling WiFi");
+    WiFi.mode(WIFI_OFF);
+
+    unsigned long t_wifi_on_end = micros();
   }
-
-  // --- 2. MEASURE TRANSMISSION TIME ---
-  unsigned long t_tx_start = micros();
-
-  // Send the message via ESP-NOW
-  esp_now_send(broadcastAddress, (uint8_t*)message.c_str(), message.length() + 1);
-
-  unsigned long t_tx_end = micros();
-
-  Serial.println("Message sent: " + message);
-
-  // Short delay to ensure the message is fully sent over the air
-  //delay(100);
-
-  // Disable Wi-Fi
-  Serial.println("\nDisabling WiFi");
-  WiFi.mode(WIFI_OFF);
-
-  unsigned long t_wifi_on_end = micros();
 
   // --- 3. MEASURE IDLE TIME (Wi-Fi OFF to Deep Sleep) ---
   unsigned long t_wifi_off_idle_start_2 = micros();
 
-  Serial.println("Entering deep sleep now...");
+  //Serial.println("Entering deep sleep now...");
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
 
   // --- TIMING CALCULATIONS & OUTPUT ---
