@@ -1,0 +1,4 @@
+#TODO remove boot timing 
+#TODO remove first part of idle time, keep only the sensing duration
+#TODO modify the colab
+#TODO redo the graph
