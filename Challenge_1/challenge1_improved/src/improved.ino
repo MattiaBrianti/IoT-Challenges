@@ -108,7 +108,7 @@ void setup() {
 
     t_tx_end = micros();
 
-    //Serial.println("Message sent: " + message);
+    Serial.println("Message sent: " + message);
 
     // Short delay to ensure the message is fully sent over the air
     //delay(100);
@@ -118,7 +118,7 @@ void setup() {
     WiFi.mode(WIFI_OFF);
 
     t_wifi_on_end = micros();
-  }
+  } 
 
   // --- 3. MEASURE IDLE TIME (Wi-Fi OFF to Deep Sleep) ---
   unsigned long t_wifi_off_idle_start_2 = micros();
