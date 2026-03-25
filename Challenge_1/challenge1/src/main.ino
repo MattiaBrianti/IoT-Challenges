@@ -98,9 +98,6 @@ void setup() {
 
   Serial.println("Message sent: " + message);
 
-  // Short delay to ensure the message is fully sent over the air
-  //delay(100);
-
   // Disable Wi-Fi
   Serial.println("\nDisabling WiFi");
   WiFi.mode(WIFI_OFF);

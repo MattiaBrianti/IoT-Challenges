@@ -77,7 +77,7 @@ void setup() {
      
     // --- 2. MEASURE Wi-Fi-ON  Time ---
     t_wifi_on_start = micros();
-    //Serial.println("Enabling WiFi STA");
+    // IMPROVED - Serial.println("Enabling WiFi STA");
     WiFi.mode(WIFI_STA);
     esp_now_init();
     
@@ -110,11 +110,8 @@ void setup() {
 
     Serial.println("Message sent: " + message);
 
-    // Short delay to ensure the message is fully sent over the air
-    //delay(100);
-
     // Disable Wi-Fi
-    //Serial.println("\nDisabling WiFi");
+    // IMPROVED - Serial.println("\nDisabling WiFi");
     WiFi.mode(WIFI_OFF);
 
     t_wifi_on_end = micros();
@@ -123,7 +120,7 @@ void setup() {
   // --- 3. MEASURE IDLE TIME (Wi-Fi OFF to Deep Sleep) ---
   unsigned long t_wifi_off_idle_start_2 = micros();
 
-  //Serial.println("Entering deep sleep now...");
+  // IMPROVED - Serial.println("Entering deep sleep now...");
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
 
   // --- TIMING CALCULATIONS & OUTPUT ---
