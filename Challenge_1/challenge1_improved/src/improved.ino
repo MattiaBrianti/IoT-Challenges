@@ -16,14 +16,11 @@ const float RL10 = 50;
 
 esp_now_peer_info_t peerInfo;
 
-// Timing variables shared across setup() and loop()
-unsigned long t_boot_start = 0;
-unsigned long t_boot_end = 0;
+// Timing variables that could not be measured due to the if condition
 unsigned long t_wifi_on_start = 0;
 unsigned long t_wifi_on_end = 0;
 unsigned long t_tx_start = 0;
 unsigned long t_tx_end = 0;
-
 
 // Parameters for Deep Sleep
 #define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
@@ -37,8 +34,8 @@ void OnDataSent(const wifi_tx_info_t *mac_addr, esp_now_send_status_t status) {
 
 void setup() {
   
-  // --- 0. MEASURE BOOT TIME ---
-  t_boot_start = micros();
+  //--- 1. MEASURE IDLE TIME (Part where the sensor measures but wifi is off) ---
+  unsigned long t_wifi_off_idle_start_1 = micros();
 
   WiFi.setTxPower(WIFI_POWER_2dBm); // Set minimum Wi-Fi transmission power
   
@@ -50,10 +47,8 @@ void setup() {
   pinMode(PIR_PIN, INPUT);
   pinMode(LDR_PIN, INPUT);
 
-  t_boot_end = micros();
-  //--- BOOT TIME MEASUREMENT END ---
-  //--- 1. MEASURE IDLE TIME (Part where the sensor measures but wifi is off) ---
-  unsigned long t_wifi_off_idle_start_1 = micros();
+  unsigned long t_wifi_off_idle_end_1 = micros();
+  // ---- FINISH 1ST PART OF IDLE TIME MEASUREMENT (Boot to Wi-Fi ON) ---
 
   // --- 1. MEASURE SENSING TIME ---
   unsigned long t_sensing_start = micros();
@@ -70,8 +65,6 @@ void setup() {
   unsigned long t_sensing_end = micros();
   //--- SENSING TIME MEASUREMENT END ---
 
-  unsigned long t_wifi_off_idle_end_1 = micros();
-  // ---- FINISH 1ST PART OF IDLE TIME MEASUREMENT (Boot to Wi-Fi ON) ---
 
   if(motionDetected == HIGH && luminosity < 100) {
      
@@ -108,6 +101,7 @@ void setup() {
 
     t_tx_end = micros();
 
+    //leave this to see if motion message is actually sent within the if condition
     Serial.println("Message sent: " + message);
 
     // Disable Wi-Fi
@@ -123,24 +117,24 @@ void setup() {
   // IMPROVED - Serial.println("Entering deep sleep now...");
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
 
+  unsigned long t_wifi_off_idle_end_2 = micros();
+
   // --- TIMING CALCULATIONS & OUTPUT ---
-  unsigned long time_boot = t_boot_end - t_boot_start;
   unsigned long time_wifi_on = (t_wifi_on_end >= t_wifi_on_start) ? (t_wifi_on_end - t_wifi_on_start) : 0;
   unsigned long time_sensing = t_sensing_end - t_sensing_start;
   unsigned long time_tx = (t_tx_end >= t_tx_start) ? (t_tx_end - t_tx_start) : 0;
+  unsigned long time_wifi_off_idle_1 = t_wifi_off_idle_end_1 - t_wifi_off_idle_start_1;
+  unsigned long time_wifi_off_idle_2 = t_wifi_off_idle_end_2 - t_wifi_off_idle_start_2;
 
   Serial.println("\n--- TIMING BREAKDOWN (in microseconds) ---");
-  Serial.print("Boot duration: "); Serial.println(time_boot);
   Serial.print("Sensing duration: "); Serial.println(time_sensing);
   Serial.print("Wi-Fi On duration: "); Serial.println(time_wifi_on);
   Serial.print("Transmission duration: "); Serial.println(time_tx);
+  Serial.print("Idle duration (Wi-Fi OFF - Part 1): "); Serial.println(time_wifi_off_idle_1);
+  Serial.print("Idle duration (Wi-Fi OFF - Part 2): "); Serial.println(time_wifi_off_idle_2);
+  Serial.print("Total Idle duration (Wi-Fi OFF): "); Serial.println(time_wifi_off_idle_1 + time_wifi_off_idle_2);
   Serial.println("------------------------------------------\n");
   Serial.flush(); // Ensure all serial data is printed before sleeping
-
-  unsigned long t_wifi_off_idle_end_2 = micros();
-
-  unsigned long time_wifi_off_idle = t_wifi_off_idle_end_1 - t_wifi_off_idle_start_1 + t_wifi_off_idle_end_2 - t_wifi_off_idle_start_2;
-  Serial.print("Idle duration (Wi-Fi OFF): "); Serial.println(time_wifi_off_idle);
 
   // Start Deep Sleep
   esp_deep_sleep_start();
