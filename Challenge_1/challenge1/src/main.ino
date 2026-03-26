@@ -28,8 +28,8 @@ void OnDataSent(const wifi_tx_info_t *mac_addr, esp_now_send_status_t status) {
 
 void setup() {
   
-  // --- 0. MEASURE BOOT TIME ---
-  unsigned long t_boot_start = micros();
+  //--- 1. MEASURE IDLE TIME (Part where the wifi is off) ---
+  unsigned long t_wifi_off_idle_start_1 = micros();
   
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // Disable brownout detector
 
@@ -39,11 +39,8 @@ void setup() {
   pinMode(PIR_PIN, INPUT);
   pinMode(LDR_PIN, INPUT);
 
-  unsigned long t_boot_end = micros();
-  //--- BOOT TIME MEASUREMENT END ---
-
-  //--- 1. MEASURE IDLE TIME (Part where the sensor measures but wifi is off) ---
-  unsigned long t_wifi_off_idle_start_1 = micros();
+  unsigned long t_wifi_off_idle_end_1 = micros();
+  // ---- FINISH 1ST PART OF IDLE TIME MEASUREMENT ---
 
   // --- 1. MEASURE SENSING TIME ---
   unsigned long t_sensing_start = micros();
@@ -59,9 +56,6 @@ void setup() {
 
   unsigned long t_sensing_end = micros();
   //--- SENSING TIME MEASUREMENT END ---
-
-  unsigned long t_wifi_off_idle_end_1 = micros();
-  // ---- FINISH 1ST PART OF IDLE TIME MEASUREMENT (Boot to Wi-Fi ON) ---
 
   // --- 2. MEASURE Wi-Fi-ON  Time ---
   unsigned long t_wifi_on_start = micros();
@@ -95,6 +89,7 @@ void setup() {
   esp_now_send(broadcastAddress, (uint8_t*)message.c_str(), message.length() + 1);
 
   unsigned long t_tx_end = micros();
+  //--- TRANSMISSION TIME MEASUREMENT END ---
 
   Serial.println("Message sent: " + message);
 
@@ -103,6 +98,7 @@ void setup() {
   WiFi.mode(WIFI_OFF);
 
   unsigned long t_wifi_on_end = micros();
+  // ---- FINISH Wi-Fi ON Time Measurement ---
 
   // --- 3. MEASURE IDLE TIME (Wi-Fi OFF to Deep Sleep) ---
   unsigned long t_wifi_off_idle_start_2 = micros();
@@ -110,24 +106,24 @@ void setup() {
   Serial.println("Entering deep sleep now...");
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
 
+  unsigned long t_wifi_off_idle_end_2 = micros();
+
   // --- TIMING CALCULATIONS & OUTPUT ---
-  unsigned long time_boot = t_boot_end - t_boot_start;
   unsigned long time_wifi_on = t_wifi_on_end - t_wifi_on_start;
   unsigned long time_sensing = t_sensing_end - t_sensing_start;
   unsigned long time_tx = t_tx_end - t_tx_start;
+  unsigned long time_wifi_off_idle_1 = t_wifi_off_idle_end_1 - t_wifi_off_idle_start_1;
+  unsigned long time_wifi_off_idle_2 = t_wifi_off_idle_end_2 - t_wifi_off_idle_start_2;
 
   Serial.println("\n--- TIMING BREAKDOWN (in microseconds) ---");
-  Serial.print("Boot duration: "); Serial.println(time_boot);
   Serial.print("Sensing duration: "); Serial.println(time_sensing);
   Serial.print("Wi-Fi On duration: "); Serial.println(time_wifi_on);
   Serial.print("Transmission duration: "); Serial.println(time_tx);
+  Serial.print("Idle duration (Wi-Fi OFF - Part 1): "); Serial.println(time_wifi_off_idle_1);
+  Serial.print("Idle duration (Wi-Fi OFF - Part 2): "); Serial.println(time_wifi_off_idle_2);
+  Serial.print("Total Idle duration (Wi-Fi OFF): "); Serial.println(time_wifi_off_idle_1 + time_wifi_off_idle_2);
   Serial.println("------------------------------------------\n");
   Serial.flush(); // Ensure all serial data is printed before sleeping
-
-  unsigned long t_wifi_off_idle_end_2 = micros();
-
-  unsigned long time_wifi_off_idle = t_wifi_off_idle_end_1 - t_wifi_off_idle_start_1 + t_wifi_off_idle_end_2 - t_wifi_off_idle_start_2;
-  Serial.print("Idle duration (Wi-Fi OFF): "); Serial.println(time_wifi_off_idle);
 
   // Start Deep Sleep
   esp_deep_sleep_start();
