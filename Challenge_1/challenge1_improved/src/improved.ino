@@ -85,13 +85,10 @@ void setup() {
     // Add peer
     esp_now_add_peer(&peerInfo);
 
-    // Create the message to send
+    // Create the message to send only if motion is detected and luminosity is below the threshold
     String message;
-    if (motionDetected == HIGH) {
-      message = "MOTION_DETECTED-LUMINOSITY:" + String(luminosity);
-    } else {
-      message = "MOTION_NOT_DETECTED-LUMINOSITY:" + String(luminosity);
-    }
+    message = "MOTION_DETECTED-LUMINOSITY:" + String(luminosity);
+    
 
     // --- 2. MEASURE TRANSMISSION TIME ---
     t_tx_start = micros();
