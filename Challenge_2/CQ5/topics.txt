@@ -1,0 +1,4 @@
+38083	university/department12/room1/temperature
+56285	metaverse/room2/floor4
+53485	hospital/facility3/area3
+42665	metaverse/room2/room2
