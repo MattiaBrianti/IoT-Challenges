@@ -1,111 +1,109 @@
 No.,Timestamp,Sequence Number,Attribute,Status,Data Type,Data Value
-1,1777909334,122,Active Power,Success,Unknown Type,0
-2,1777909334,122,RMS Current,Success,Unknown,0
-3,1777909334,122,RMS Voltage,Success,Unknown,0
+1,1778163570,117,Active Power,,,0
+2,1778163570,117,RMS Current,,,0
+3,1778163570,117,RMS Voltage,,,0
 
-4,1777909335,101,Active Power,Success,16-Bit Signed Integer,0
-5,1777909335,101,RMS Current,Success,16-Bit Unsigned Integer,0
-6,1777909335,101,RMS Voltage,Success,16-Bit Unsigned Integer,220
+4,1778163574,160,Active Power,Success,16-Bit Signed Integer,0
+5,1778163574,160,RMS Current,Success,16-Bit Unsigned Integer,0
+6,1778163574,160,RMS Voltage,Success,16-Bit Unsigned Integer,222
 
-7,1777909340,247,Active Power,Success,Unknown Type,0
-8,1777909340,247,RMS Current,Success,Unknown,0
-9,1777909340,247,RMS Voltage,Success,Unknown,0
+7,1778163578,245,Active Power,Success,16-Bit Signed Integer,0
+8,1778163578,245,RMS Current,Success,16-Bit Unsigned Integer,0
+9,1778163578,245,RMS Voltage,Success,16-Bit Unsigned Integer,219
 
-10,1777909341,38,Active Power,Success,16-Bit Signed Integer,0
-11,1777909341,38,RMS Current,Success,16-Bit Unsigned Integer,0
-12,1777909341,38,RMS Voltage,Success,16-Bit Unsigned Integer,222
+10,1778163598,161,Active Power,,,0
+11,1778163598,161,RMS Current,,,0
+12,1778163598,161,RMS Voltage,,,0
 
-13,1777909350,70,Active Power,Success,16-Bit Signed Integer,0
-14,1777909350,70,RMS Current,Success,16-Bit Unsigned Integer,0
-15,1777909350,70,RMS Voltage,Success,16-Bit Unsigned Integer,219
+13,1778163602,39,Active Power,,,0
+14,1778163602,39,RMS Current,,,0
+15,1778163602,39,RMS Voltage,,,0
 
-16,1777909361,43,Active Power,Success,Unknown Type,0
-17,1777909361,43,RMS Current,Success,Unknown,0
-18,1777909361,43,RMS Voltage,Success,Unknown,0
+16,1778163604,243,Active Power,,,0
+17,1778163604,243,RMS Current,,,0
+18,1778163604,243,RMS Voltage,,,0
 
-19,1777909376,56,Active Power,Success,Unknown Type,0
-20,1777909376,56,RMS Current,Success,Unknown,0
-21,1777909376,56,RMS Voltage,Success,Unknown,0
+19,1778163623,54,Active Power,,,0
+20,1778163623,54,RMS Current,,,0
+21,1778163623,54,RMS Voltage,,,0
 
-22,1777909387,25,Active Power,Success,Unknown Type,0
-23,1777909387,25,RMS Current,Success,Unknown,0
-24,1777909387,25,RMS Voltage,Success,Unknown,0
+22,1778163624,60,Active Power,Success,16-Bit Signed Integer,0
+23,1778163624,60,RMS Current,Success,16-Bit Unsigned Integer,0
+24,1778163624,60,RMS Voltage,Success,16-Bit Unsigned Integer,220
 
-25,1777909393,230,Active Power,Success,Unknown Type,0
-26,1777909393,230,RMS Current,Success,Unknown,0
-27,1777909393,230,RMS Voltage,Success,Unknown,0
+25,1778163629,24,Active Power,,,0
+26,1778163629,24,RMS Current,,,0
+27,1778163629,24,RMS Voltage,,,0
 
-28,1777909395,58,RMS Voltage,Success,16-Bit Unsigned Integer,220
+28,1778163632,121,Active Power,Success,16-Bit Signed Integer,0
+29,1778163632,121,RMS Current,Success,16-Bit Unsigned Integer,0
+30,1778163632,121,RMS Voltage,Success,16-Bit Unsigned Integer,221
 
-29,1777909397,126,Active Power,Success,Unknown Type,0
-30,1777909397,126,RMS Current,Success,Unknown,0
-31,1777909397,126,RMS Voltage,Success,Unknown,0
+31,1778163644,127,Active Power,,,0
+32,1778163644,127,RMS Current,,,0
+33,1778163644,127,RMS Voltage,,,0
 
-32,1777909400,241,Active Power,Success,Unknown Type,0
-33,1777909400,241,RMS Current,Success,Unknown,0
-34,1777909400,241,RMS Voltage,Success,Unknown,0
+34,1778163655,8,Active Power,,,0
+35,1778163655,8,RMS Current,,,0
+36,1778163655,8,RMS Voltage,,,0
 
-35,1777909401,11,Active Power,Success,Unknown Type,0
-36,1777909401,11,RMS Current,Success,Unknown,0
-37,1777909401,11,RMS Voltage,Success,Unknown,0
+37,1778163658,56,Active Power,,,0
+38,1778163658,56,RMS Current,,,0
+39,1778163658,56,RMS Voltage,,,0
 
-38,1777909405,218,Active Power,Success,16-Bit Signed Integer,0
-39,1777909405,218,RMS Current,Success,16-Bit Unsigned Integer,0
-40,1777909405,218,RMS Voltage,Success,16-Bit Unsigned Integer,223
+40,1778163662,160,Active Power,Success,16-Bit Signed Integer,0
+41,1778163662,160,RMS Current,Success,16-Bit Unsigned Integer,0
+42,1778163662,160,RMS Voltage,Success,16-Bit Unsigned Integer,220
 
-41,1777909422,222,Active Power,Success,Unknown Type,0
-42,1777909422,222,RMS Current,Success,Unknown,0
-43,1777909422,222,RMS Voltage,Success,Unknown,0
+43,1778163675,218,Active Power,Success,16-Bit Signed Integer,0
+44,1778163675,218,RMS Current,Success,16-Bit Unsigned Integer,0
+45,1778163675,218,RMS Voltage,Success,16-Bit Unsigned Integer,220
 
-44,1777909423,230,Active Power,Success,Unknown Type,0
-45,1777909423,230,RMS Current,Success,Unknown,0
-46,1777909423,230,RMS Voltage,Success,Unknown,0
+46,1778163680,174,Active Power,Success,16-Bit Signed Integer,0
+47,1778163680,174,RMS Current,Success,16-Bit Unsigned Integer,0
+48,1778163680,174,RMS Voltage,Success,16-Bit Unsigned Integer,220
 
-47,1777909425,170,Active Power,Success,16-Bit Signed Integer,0
-48,1777909425,170,RMS Current,Success,16-Bit Unsigned Integer,0
-49,1777909425,170,RMS Voltage,Success,16-Bit Unsigned Integer,221
+49,1778163686,172,Active Power,,,0
+50,1778163686,172,RMS Current,,,0
+51,1778163686,172,RMS Voltage,,,0
 
-50,1777909426,62,Active Power,Success,Unknown Type,0
-51,1777909426,62,RMS Current,Success,Unknown,0
-52,1777909426,62,RMS Voltage,Success,Unknown,0
+52,1778163688,150,Active Power,,,0
+53,1778163688,150,RMS Current,,,0
+54,1778163688,150,RMS Voltage,,,0
 
-53,1777909439,150,Active Power,Success,Unknown Type,0
-54,1777909439,150,RMS Current,Success,Unknown,0
-55,1777909439,150,RMS Voltage,Success,Unknown,0
+55,1778163689,198,Active Power,,,0
+56,1778163689,198,RMS Current,,,0
+57,1778163689,198,RMS Voltage,,,0
 
-56,1777909442,236,Active Power,Success,16-Bit Signed Integer,0
-57,1777909442,236,RMS Current,Success,16-Bit Unsigned Integer,0
-58,1777909442,236,RMS Voltage,Success,16-Bit Unsigned Integer,220
+58,1778163696,124,RMS Voltage,,16-Bit Unsigned Integer,219
 
-59,1777909469,220,Active Power,Success,Unknown Type,0
-60,1777909469,220,RMS Current,Success,Unknown,0
-61,1777909469,220,RMS Voltage,Success,Unknown,0
+59,1778163698,187,Active Power,,,0
+60,1778163698,187,RMS Current,,,0
+61,1778163698,187,RMS Voltage,,,0
 
-62,1777909471,236,Active Power,Success,Unknown Type,0
-63,1777909471,236,RMS Current,Success,Unknown,0
-64,1777909471,236,RMS Voltage,Success,Unknown,0
+62,1778163704,213,Active Power,,,0
+63,1778163704,213,RMS Current,,,0
+64,1778163704,213,RMS Voltage,,,0
 
-65,1777909474,122,RMS Voltage,Success,16-Bit Unsigned Integer,221
+65,1778163718,161,Active Power,,,0
+66,1778163718,161,RMS Current,,,0
+67,1778163718,161,RMS Voltage,,,0
 
-66,1777909475,42,RMS Voltage,Success,16-Bit Unsigned Integer,222
+68,1778163731,170,Active Power,Success,16-Bit Signed Integer,0
+69,1778163731,170,RMS Current,Success,16-Bit Unsigned Integer,0
+70,1778163731,170,RMS Voltage,Success,16-Bit Unsigned Integer,221
 
-67,1777909484,153,Active Power,Success,16-Bit Signed Integer,0
-68,1777909484,153,RMS Current,Success,16-Bit Unsigned Integer,0
-69,1777909484,153,RMS Voltage,Success,16-Bit Unsigned Integer,223
+71,1778163741,114,RMS Voltage,,16-Bit Unsigned Integer,221
 
-70,1777909491,180,Active Power,Success,Unknown Type,0
-71,1777909491,180,RMS Current,Success,Unknown,0
-72,1777909491,180,RMS Voltage,Success,Unknown,0
+72,1778163757,176,Active Power,Success,16-Bit Signed Integer,0
+73,1778163757,176,RMS Current,Success,16-Bit Unsigned Integer,0
+74,1778163757,176,RMS Voltage,Success,16-Bit Unsigned Integer,219
 
-73,1777909506,73,RMS Current,Success,16-Bit Unsigned Integer,0
+75,1778163759,16,Active Power,,,0
+76,1778163759,16,RMS Current,,,0
+77,1778163759,16,RMS Voltage,,,0
 
-74,1777909508,251,Active Power,Success,Unknown Type,0
-75,1777909508,251,RMS Current,Success,Unknown,0
-76,1777909508,251,RMS Voltage,Success,Unknown,0
-
-77,1777909523,160,Active Power,Success,16-Bit Signed Integer,0
-78,1777909523,160,RMS Current,Success,16-Bit Unsigned Integer,0
-79,1777909523,160,RMS Voltage,Success,16-Bit Unsigned Integer,220
-
-80,1777909528,169,RMS Voltage,Success,16-Bit Unsigned Integer,221
+78,1778163768,125,Active Power,,,0
+79,1778163768,125,RMS Current,,,0
+80,1778163768,125,RMS Voltage,,,0
 

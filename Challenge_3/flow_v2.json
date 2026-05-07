@@ -1,0 +1,783 @@
+[
+    {
+        "id": "46dc0ef196591e8b",
+        "type": "tab",
+        "label": "C3_P1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "2f152798f0b56bc1",
+        "type": "inject",
+        "z": "46dc0ef196591e8b",
+        "name": "UNIX timestamp",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 100,
+        "wires": [
+            [
+                "f03b92f2b15dbf64"
+            ]
+        ]
+    },
+    {
+        "id": "f03b92f2b15dbf64",
+        "type": "function",
+        "z": "46dc0ef196591e8b",
+        "name": "Random number",
+        "func": "let genCount = context.get(\"genCount_finale\") || 0;\n\nif (genCount < 200) {\n    genCount++;\n    context.set(\"genCount_finale\", genCount);\n\n    let random_id = Math.floor(Math.random() * 30001);\n    let current_ts = Math.floor(Date.now() / 1000);\n    \n    // Payload\n    msg.payload = {\n        id: random_id,\n        timestamp: current_ts\n    };\n    \n    // Add extra info for the CSV\n    msg.row_num = genCount;\n    \n    return msg;\n}\n\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 100,
+        "wires": [
+            [
+                "bef6575ca1529b7e",
+                "c50be98cd1c62245"
+            ]
+        ]
+    },
+    {
+        "id": "6a0839f7689b26e5",
+        "type": "csv",
+        "z": "46dc0ef196591e8b",
+        "name": "Format id_log",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "once",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "No.,ID,TIMESTAMP",
+        "skip": "0",
+        "strings": false,
+        "include_empty_strings": false,
+        "include_null_values": false,
+        "x": 940,
+        "y": 260,
+        "wires": [
+            [
+                "17adc04e3c564661"
+            ]
+        ]
+    },
+    {
+        "id": "17adc04e3c564661",
+        "type": "file",
+        "z": "46dc0ef196591e8b",
+        "name": "Write CSV file",
+        "filename": "/home/iotpolimi/Desktop/IoT-Challenges/Challenge_3/id_log.csv",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 1160,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bef6575ca1529b7e",
+        "type": "mqtt out",
+        "z": "46dc0ef196591e8b",
+        "name": "Publish on ID generator",
+        "topic": "challenge3/id_generator",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "c31645e80eb74c44",
+        "x": 750,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "5a74ef65c62527e8",
+        "type": "mqtt in",
+        "z": "46dc0ef196591e8b",
+        "name": "Subcribe to ID generator",
+        "topic": "challenge3/id_generator",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "c31645e80eb74c44",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 380,
+        "wires": [
+            [
+                "1ba478d31070e8b8"
+            ]
+        ]
+    },
+    {
+        "id": "1ba478d31070e8b8",
+        "type": "function",
+        "z": "46dc0ef196591e8b",
+        "name": "Calculate N & Limit 200",
+        "func": "const REMAINDER_NUM = 5218; \nconst ID_PROCESS_LIMIT = 200; \n\nlet count = context.get(\"counter\") || 0;\n\nif (count < ID_PROCESS_LIMIT) {\n    count++;\n    context.set(\"counter\", count); \n\n    let incomingData = msg.payload;\n    if (typeof incomingData === \"string\") {\n        try {\n            incomingData = JSON.parse(incomingData);\n        } catch(e) {\n            return [null, null];\n        }\n    }\n\n    let sub_id = incomingData.id;\n    let N = parseInt(sub_id, 10) % REMAINDER_NUM;\n\n    // Payload for CSV\n    let newMsg = {\n        payload: {\n            \"No.\": count,\n            \"ID\": sub_id,\n            \"TIMESTAMP\": incomingData.timestamp\n        },\n        sub_id: sub_id,\n        N: N,\n        timestamp: incomingData.timestamp\n    };\n\n    if (count === ID_PROCESS_LIMIT) {\n        let fineMsg = { payload: \"END_ELABORATION \" };\n        return [newMsg, fineMsg]; \n    }\n    \n    return [newMsg, null]; \n}\n\nreturn [null, null];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 380,
+        "wires": [
+            [
+                "27ae87f15479df6a"
+            ],
+            [
+                "ec4bb32fa90101be"
+            ]
+        ]
+    },
+    {
+        "id": "27ae87f15479df6a",
+        "type": "file in",
+        "z": "46dc0ef196591e8b",
+        "name": "Read CSV from the challenge",
+        "filename": "/home/iotpolimi/Desktop/IoT-Challenges/Challenge_3/Materials/challenge3.csv",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 850,
+        "y": 380,
+        "wires": [
+            [
+                "a47ef90b1ae324ac"
+            ]
+        ]
+    },
+    {
+        "id": "a47ef90b1ae324ac",
+        "type": "csv",
+        "z": "46dc0ef196591e8b",
+        "name": "Parser",
+        "sep": ",",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": false,
+        "include_empty_strings": false,
+        "include_null_values": false,
+        "x": 1150,
+        "y": 380,
+        "wires": [
+            [
+                "71a5789fdd47c64b"
+            ]
+        ]
+    },
+    {
+        "id": "1f7c0e824b9685af",
+        "type": "delay",
+        "z": "46dc0ef196591e8b",
+        "name": "Rate limiter",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "10",
+        "nbRateUnits": "1",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 770,
+        "y": 480,
+        "wires": [
+            [
+                "05d21737031bf212"
+            ]
+        ]
+    },
+    {
+        "id": "05d21737031bf212",
+        "type": "mqtt out",
+        "z": "46dc0ef196591e8b",
+        "name": "Publish the new message",
+        "topic": "",
+        "qos": "1",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "c31645e80eb74c44",
+        "x": 1150,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "e883ee256973b192",
+        "type": "function",
+        "z": "46dc0ef196591e8b",
+        "name": "ZCL Attribute Parser",
+        "func": "let cmdStr = msg.payload.payload; \nlet timestamp = msg.payload.timestamp;\n\nif (cmdStr.includes(\"RMS Current\") || cmdStr.includes(\"RMS Voltage\") || cmdStr.includes(\"Active Power\")) {\n    \n    // Pulizia della stringa per renderla un JSON valido\n    let cleanStr = cmdStr.replace(/'/g, '\"');\n    let obj;\n    try {\n        obj = JSON.parse(cleanStr);\n    } catch (e) { return null; }\n\n    // Estrazione Sequence Number\n    let seqNum = obj[\"Sequence Number\"] || \"\"; \n\n    // Estrazione array (se non esistono, creiamo array vuoti invece di forzare valori)\n    let attrs = Array.isArray(obj[\"Attribute\"]) ? obj[\"Attribute\"] : (obj[\"Attribute\"] ? [obj[\"Attribute\"]] : []);\n    let stats = Array.isArray(obj[\"Status\"]) ? obj[\"Status\"] : (obj[\"Status\"] ? [obj[\"Status\"]] : []);\n    let types = Array.isArray(obj[\"Data Type\"]) ? obj[\"Data Type\"] : (obj[\"Data Type\"] ? [obj[\"Data Type\"]] : []);\n    \n    let valPower = obj[\"Int16\"] || \"0\";\n    let valOthers = Array.isArray(obj[\"Uint16\"]) ? obj[\"Uint16\"] : (obj[\"Uint16\"] ? [obj[\"Uint16\"]] : []);\n    \n    let count = context.get(\"csv_row_count\") || 1;\n    let results = [];\n    \n    let uint16Index = 0; \n\n    // Ciclo principale: accoppiamento posizionale\n    for (let i = 0; i < attrs.length; i++) {\n        let attrFull = attrs[i];\n        if (!attrFull || typeof attrFull !== \"string\") continue; \n        \n        let val = \"\";\n        \n        if (attrFull.includes(\"Active Power\")) {\n            val = valPower;\n        } \n        else if (attrFull.includes(\"RMS Current\") || attrFull.includes(\"RMS Voltage\")) {\n            if (valOthers[uint16Index] !== undefined) {\n                 val = String(valOthers[uint16Index]).split(\" \")[0];\n                 uint16Index++; \n            } else {\n                 val = \"0\"; \n            }\n        }\n\n        // Procediamo solo se è uno degli attributi di interesse\n        if (attrFull.includes(\"Active Power\") || attrFull.includes(\"RMS Current\") || attrFull.includes(\"RMS Voltage\")) {\n            \n            // Prendiamo lo status ESATTAMENTE nella stessa posizione (i). Se non c'è, stringa vuota.\n            let statStr = stats[i] !== undefined ? String(stats[i]) : \"\";\n            let typeStr = types[i] !== undefined ? String(types[i]) : \"\";\n            \n            let line = {\n                \"No.\": count,\n                \"Timestamp\": timestamp,\n                \"Sequence Number\": seqNum,\n                \"Attribute\": attrFull.split(\" (\")[0].trim(),\n                \"Status\": statStr.split(\" (\")[0].trim(),\n                \"Data Type\": typeStr.split(\" (\")[0].trim(),\n                \"Data Value\": val\n            };\n            results.push(line);\n            count++;\n        }\n    }\n    \n    context.set(\"csv_row_count\", count);\n    \n    if (results.length > 0) {\n        msg.payload = results;\n        return msg;\n    }\n}\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 620,
+        "wires": [
+            [
+                "d129020f207da58c",
+                "503c94d27048cab0"
+            ]
+        ]
+    },
+    {
+        "id": "d129020f207da58c",
+        "type": "csv",
+        "z": "46dc0ef196591e8b",
+        "name": "Format filtered_elems",
+        "sep": ",",
+        "hdrin": false,
+        "hdrout": "once",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "No.,Timestamp,Sequence Number,Attribute,Status,Data Type,Data Value",
+        "skip": "0",
+        "strings": false,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 580,
+        "y": 620,
+        "wires": [
+            [
+                "796b739286b9e1ef"
+            ]
+        ]
+    },
+    {
+        "id": "796b739286b9e1ef",
+        "type": "file",
+        "z": "46dc0ef196591e8b",
+        "name": "filtered_elems.csv",
+        "filename": "/home/iotpolimi/Desktop/IoT-Challenges/Challenge_3/filtered_elems.csv",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 850,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "503c94d27048cab0",
+        "type": "split",
+        "z": "46dc0ef196591e8b",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 490,
+        "y": 780,
+        "wires": [
+            [
+                "d93a2d38db03e0b6"
+            ]
+        ]
+    },
+    {
+        "id": "d93a2d38db03e0b6",
+        "type": "switch",
+        "z": "46dc0ef196591e8b",
+        "name": "",
+        "property": "payload.Attribute",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "RMS Voltage",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "RMS Current",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 780,
+        "wires": [
+            [
+                "9673dc37370c1141"
+            ],
+            [
+                "5289dc071d17aedb"
+            ]
+        ]
+    },
+    {
+        "id": "9673dc37370c1141",
+        "type": "change",
+        "z": "46dc0ef196591e8b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload[\"Data Value\"]",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 980,
+        "y": 740,
+        "wires": [
+            [
+                "71fb2f34ec52d190"
+            ]
+        ]
+    },
+    {
+        "id": "5289dc071d17aedb",
+        "type": "change",
+        "z": "46dc0ef196591e8b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload[\"Data Value\"]",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 980,
+        "y": 820,
+        "wires": [
+            [
+                "bb07fb79e32fd85e"
+            ]
+        ]
+    },
+    {
+        "id": "7d98021790125671",
+        "type": "ui_chart",
+        "z": "46dc0ef196591e8b",
+        "name": "",
+        "group": "57545cfa81764af3",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "RMS Voltage",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "4",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1430,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "df78846f49df9d80",
+        "type": "ui_chart",
+        "z": "46dc0ef196591e8b",
+        "name": "",
+        "group": "57545cfa81764af3",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "RMS Current",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "4",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1430,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "71a5789fdd47c64b",
+        "type": "function",
+        "z": "46dc0ef196591e8b",
+        "name": "Packet Router (ZBEE vs Link)",
+        "func": "let rawRow = msg.payload; \n\nif (typeof rawRow !== \"object\" || rawRow === null) return [null, null];\n\n// 1. KEY NORMALISATION: We create a new object with the keys cleaned up\nlet row = {};\nfor (let key in rawRow) {\n    row[key.trim()] = rawRow[key];\n}\n\n// 2. Now we can use clean keys\nif (!row[\"Packet Number\"]) return [null, null];\n\nlet packetNumber = parseInt(row[\"Packet Number\"], 10);\nlet targetN = parseInt(msg.N, 10);\n\nif (packetNumber !== targetN) return [null, null];\n\nlet packetType = row[\"Packet Type\"] || \"\";\nlet commandStr = row[\"Command String\"] || \"\";\n\n// --- 1: ZBEE_ZCL ---\nif (commandStr && commandStr.includes(\"Layer ZBEE_ZCL\")) {\n    let devName = row[\"Device Name ZigBee Source\"] ? row[\"Device Name ZigBee Source\"].trim() : \"Unknown\";\n    let topicStr = \"ZigBee/\" + devName;\n    \n    let outMsg = {\n        topic: topicStr,\n        payload: {\n            timestamp: Math.floor(Date.now() / 1000),\n            id: msg.sub_id,\n            \"wpan.src\": row[\"Source Address\"],\n            \"wpan.dst\": row[\"Destination Address\"],\n            \"zbee.src\": row[\"Source Address ZigBee\"],\n            \"zbee.dst\": row[\"Destination Address ZigBee\"],\n            topic: topicStr,\n            payload: commandStr\n        },\n        N: msg.N,\n        sub_id: msg.sub_id,\n        timestamp: msg.timestamp \n    };\n    return [outMsg, null]; \n}\n\n// --- 2: LINK STATUS ---\nelse if (packetType && packetType.includes(\"Link Status\")) {\n    let linkMsg = {\n        payload: commandStr,\n        source: row[\"Source Address ZigBee\"]\n    };\n    return [null, linkMsg]; \n}\n\nreturn [null, null];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 210,
+        "y": 480,
+        "wires": [
+            [
+                "1f7c0e824b9685af",
+                "e883ee256973b192"
+            ],
+            [
+                "20dea59a1ab0e0b6"
+            ]
+        ]
+    },
+    {
+        "id": "20dea59a1ab0e0b6",
+        "type": "function",
+        "z": "46dc0ef196591e8b",
+        "name": "Process Link Status",
+        "func": "// Recover Routing table\nlet routingTable = global.get(\"routingTable\") || {};\n\nlet src = msg.source;\nlet cmdStr = msg.payload;\n\n// Clean the string to make it a real JSON\nlet cleanStr = cmdStr.replace(/'/g, '\"').replace(/True/g, 'true').replace(/False/g, 'false');\n\ntry {\n    let obj = JSON.parse(cleanStr);\n    \n    // Check for links in this message\n    if (obj.Links && Array.isArray(obj.Links)) {\n        \n        if (!routingTable[src]) {\n            routingTable[src] = {};\n        }\n\n        // Update costs for each destination\n        for (let i = 0; i < obj.Links.length; i++) {\n            let link = obj.Links[i];\n            let dest = link.Address;\n            let cost = link[\"Outgoing Cost\"];\n            \n            // Save costs\n            routingTable[src][dest] = cost;\n        }\n        \n        // Save update table in the global memory\n        global.set(\"routingTable\", routingTable);\n    }\n} catch (e) {\n    node.warn(\"Errore parsing Link Status: \" + e.message);\n}\n\n// This node must not pass anything on; its sole purpose is to store data\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ec4bb32fa90101be",
+        "type": "function",
+        "z": "46dc0ef196591e8b",
+        "name": "Finalize Routing Table",
+        "func": "let routingTable = global.get(\"routingTable\");\n\n// If the table is empty, STOP\nif (!routingTable) return null;\n\nlet results = [];\nlet rowNum = 1;\n\n// The table is structured as follows: { source: { dest1: cost, dest2: cost } }\n// We need to convert it into an array of rows for the CSV\nfor (let src in routingTable) {\n    let destinations = routingTable[src];\n    for (let dest in destinations) {\n        let cost = destinations[dest];\n        \n        let row = {\n            \"No.\": rowNum,\n            \"Source\": src,\n            \"Destination\": dest,\n            \"Cost\": cost\n        };\n        results.push(row);\n        rowNum++;\n    }\n}\n\nif (results.length > 0) {\n    msg.payload = results;\n    return msg;\n}\n\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 920,
+        "wires": [
+            [
+                "d802d12c82a76183"
+            ]
+        ]
+    },
+    {
+        "id": "d802d12c82a76183",
+        "type": "csv",
+        "z": "46dc0ef196591e8b",
+        "name": "Format outgoing_cost",
+        "sep": ",",
+        "hdrin": false,
+        "hdrout": "once",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "No.,Source,Destination,Cost",
+        "skip": "0",
+        "strings": false,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 440,
+        "y": 920,
+        "wires": [
+            [
+                "57488944e009a2d0",
+                "202c5d3abe60cf93"
+            ]
+        ]
+    },
+    {
+        "id": "57488944e009a2d0",
+        "type": "file",
+        "z": "46dc0ef196591e8b",
+        "name": "outgoing_cost",
+        "filename": "/home/iotpolimi/Desktop/IoT-Challenges/Challenge_3/outgoing_cost.csv",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 680,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c50be98cd1c62245",
+        "type": "function",
+        "z": "46dc0ef196591e8b",
+        "name": "Prepare id_log",
+        "func": "// Create the row\nlet row = {\n    \"No.\": msg.row_num,\n    \"ID\": msg.payload.id,\n    \"TIMESTAMP\": msg.payload.timestamp\n};\n\n// Substitute the payload for the CSV\nmsg.payload = row;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 220,
+        "wires": [
+            [
+                "6a0839f7689b26e5"
+            ]
+        ]
+    },
+    {
+        "id": "202c5d3abe60cf93",
+        "type": "function",
+        "z": "46dc0ef196591e8b",
+        "name": "Sort & Format for Cloud",
+        "func": "// Let's retrieve the complete map saved in memory\nlet table = global.get(\"routingTable\");\nif (!table) return null;\n\n// Let's select the smallest source address\n// Let's extract all the source addresses we have found\nlet allSources = Object.keys(table);\n\n// if there is nothing, we stop\nif (allSources.length === 0) return null;\n\n// Let’s sort the addresses from smallest to largest.\n// We’ll use parseInt(..., 16) to tell Node-RED to treat them as proper hexadecimal numbers!\nallSources.sort((a, b) => parseInt(a, 16) - parseInt(b, 16));\n\n// The first address in the sorted list is, mathematically, the smallest\nlet sourceMin = allSources[0];\n\nlet destinations = table[sourceMin];\n\nif (!destinations) return null;\n\n// Let's extract the destinations and sort them in alphanumeric order\n// Let's extract the destinations and sort them as actual hexadecimal numbers!\nlet destKeys = Object.keys(destinations).sort((a, b) => parseInt(a, 16) - parseInt(b, 16));\nlet messages = [];\n\n// Let’s prepare a package for each destination\nfor (let i = 0; i < destKeys.length; i++) {\n    let dest = destKeys[i];\n    let cost = destinations[dest];\n    \n    // Let's include the cost in the “payload”, which will then be sent\n    messages.push({ payload: cost }); \n}\n\n// When returning an array of messages, Node-RED will queue them one after the other\nreturn [messages];",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 1000,
+        "wires": [
+            [
+                "09e3043fed5f5bb1"
+            ]
+        ]
+    },
+    {
+        "id": "09e3043fed5f5bb1",
+        "type": "delay",
+        "z": "46dc0ef196591e8b",
+        "name": "Rate limit",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "20",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 940,
+        "y": 1000,
+        "wires": [
+            [
+                "6cee83657dfc6603"
+            ]
+        ]
+    },
+    {
+        "id": "6cee83657dfc6603",
+        "type": "http request",
+        "z": "46dc0ef196591e8b",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://api.thingspeak.com/update?api_key=COU74ECMV1W0ZPB7&field1={{{payload}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1150,
+        "y": 1000,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "71fb2f34ec52d190",
+        "type": "function",
+        "z": "46dc0ef196591e8b",
+        "name": "Set Voltage Topic",
+        "func": "// Unification\nmsg.topic = \"Unified RMS Voltage\";\n\nmsg.timestamp = Date.now(); \n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1210,
+        "y": 740,
+        "wires": [
+            [
+                "7d98021790125671"
+            ]
+        ]
+    },
+    {
+        "id": "bb07fb79e32fd85e",
+        "type": "function",
+        "z": "46dc0ef196591e8b",
+        "name": "Set Current Topic",
+        "func": "// Unification\nmsg.topic = \"Unified RMS Current\";\n\nmsg.timestamp = Date.now(); \n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1210,
+        "y": 820,
+        "wires": [
+            [
+                "df78846f49df9d80"
+            ]
+        ]
+    },
+    {
+        "id": "c31645e80eb74c44",
+        "type": "mqtt-broker",
+        "name": "localhost:1884",
+        "broker": "localhost",
+        "port": "1884",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "57545cfa81764af3",
+        "type": "ui_group",
+        "name": "Parametri Elettrici",
+        "tab": "0ac55a66e3baff51",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "0ac55a66e3baff51",
+        "type": "ui_tab",
+        "name": "Dashboard ZigBee",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
