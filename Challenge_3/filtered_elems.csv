@@ -114,3 +114,31 @@ No.,Timestamp,Sequence Number,Attribute,Status,Data Type,Data Value
 113,1778317674,200,Active Power,,,0
 114,1778317674,200,RMS Current,,,0
 115,1778317674,200,RMS Voltage,,,0
+No.,Timestamp,Sequence Number,Attribute,Status,Data Type,Data Value
+1,1778318538,247,Active Power,Success,16-Bit Signed Integer,0
+2,1778318538,247,RMS Current,Success,16-Bit Unsigned Integer,0
+3,1778318538,247,RMS Voltage,Success,16-Bit Unsigned Integer,222
+4,1778318541,123,Active Power,,,0
+5,1778318541,123,RMS Current,,,0
+6,1778318541,123,RMS Voltage,,,0
+7,1778318544,125,Active Power,Success,16-Bit Signed Integer,0
+8,1778318544,125,RMS Current,Success,16-Bit Unsigned Integer,0
+9,1778318544,125,RMS Voltage,Success,16-Bit Unsigned Integer,219
+10,1778318560,139,Active Power,,,0
+11,1778318560,139,RMS Current,,,0
+12,1778318560,139,RMS Voltage,,,0
+13,1778318570,141,Active Power,,,0
+14,1778318570,141,RMS Current,,,0
+15,1778318570,141,RMS Voltage,,,0
+16,1778318575,148,Active Power,,,0
+17,1778318575,148,RMS Current,,,0
+18,1778318575,148,RMS Voltage,,,0
+19,1778318579,99,Active Power,,,0
+20,1778318579,99,RMS Current,,,0
+21,1778318579,99,RMS Voltage,,,0
+22,1778318582,122,Active Power,,,0
+23,1778318582,122,RMS Current,,,0
+24,1778318582,122,RMS Voltage,,,0
+25,1778318587,70,Active Power,Success,16-Bit Signed Integer,0
+26,1778318587,70,RMS Current,Success,16-Bit Unsigned Integer,0
+27,1778318587,70,RMS Voltage,Success,16-Bit Unsigned Integer,219
